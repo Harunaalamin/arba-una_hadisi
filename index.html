@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="ha">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arba'una Hadisi App</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        header {
+            text-align: center;
+            background-color: #0f5132;
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        header h1 { margin: 0; font-size: 24px; }
+        
+        /* Salon Button na Jerin Hadisai */
+        .list-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .hadith-btn {
+            background-color: white;
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: left;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: bold;
+            color: #0f5132;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+        .hadith-btn:hover {
+            background-color: #e9ecef;
+        }
+
+        /* Salon Katin Nuna Hadisi */
+        .hadith-card {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+            border-left: 5px solid #198754;
+            display: none; /* Da fari zai boyu sai an danna */
+        }
+        .hadith-card h2 { color: #0f5132; margin-top: 0; }
+        .arabic { font-size: 22px; line-height: 1.8; color: #2c3e50; padding: 15px 0; font-weight: bold; }
+        .translation { margin: 15px 0; font-size: 16px; line-height: 1.5; }
+        .lang-label { font-weight: bold; color: #198754; }
+        
+        .back-btn {
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Arba'una Hadisi</h1>
+        <p>Zabi Hadisi domin Karantawa</p>
+    </header>
+
+    <main>
+        <div id="hadithList" class="list-container">
+            </div>
+
+        <div id="hadithCard" class="hadith-card">
+            <button class="back-btn" onclick="komaBaya()">← Komawa Baya</button>
+            <h2 id="cardTitle"></h2>
+            <div id="cardArabic" class="arabic" dir="rtl"></div>
+            <hr>
+            <div class="translation"><span class="lang-label">English:</span> <span id="cardEnglish"></span></div>
+            <hr>
+            <div class="translation"><span class="lang-label">Hausa:</span> <span id="cardHausa"></span></div>
+        </div>
+    </main>
+
+    <script>
+        // 1. Ma'ajiyar Hadisai (Database na jikin app)
+        const dukkanHadisai = [
+            {
+                lamba: 1,
+                title: "Hadisi na 1: Niyya (Intentions)",
+                arabic: "إِنَّمَا الأَعْمَالُ بِالنِّيَّاتِ، وَإِنَّمَا لِكُلِّ amri'in mā nawā...",
+                english: "Actions are according to intentions, and everyone will get what was intended...",
+                hausa: "Lallai ayyuka suna tare da niyya, kuma kowane mutum yana da abin da ya yi niyya..."
+            },
+            {
+                lamba: 2,
+                title: "Hadisi na 2: Musulunci, Imani da Ihsan",
+                arabic: "بَيْنَمَا نَحْنُ جُلُوسٌ عِنْدَ رَسُولِ اللَّهِ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ...",
+                english: "While we were sitting with the Messenger of Allah one day, a man appeared...",
+                hausa: "Yayin da muke zaune a wurin Manzon Allah (S.A.W) wata rana, sai ga wani mutum ya bayyana..."
+            },
+            {
+                lamba: 3,
+                title: "Hadisi na 3: Shika-shikan Musulunci",
+                arabic: "بُنِيَ الإِسْلاَمُ عَلَى خَمْسٍ: شَهَادَةِ أَنْ لاَ إِلَهَ إِلاَّ اللَّهُ...",
+                english: "Islam has been built upon five pillars: Testifying that there is no deity but Allah...",
+                hausa: "An gina Musulunci a kan abubuwa guda biyar: Shaidawa cewa babu abin bautawa da gaskiya sai Allah..."
+            }
+        ];
+
+        // 2. Wannan bangaren yana nuna jerin sunayen hadisai a shafin farko
+        const listDiv = document.getElementById('hadithList');
+        
+        dukkanHadisai.forEach((hadisi, index) => {
+            const button = document.createElement('button');
+            button.className = 'hadith-btn';
+            button.innerText = `${index + 1}. ${hadisi.title}`;
+            // Idan aka danna button din, zai bude hadisin
+            button.onclick = () => budeHadisi(index);
+            listDiv.appendChild(button);
+        });
+
+        // 3. Wannan aikin zai bude takamaiman hadisin da aka danna
+        function budeHadisi(index) {
+            const h = dukkanHadisai[index];
+            
+            document.getElementById('cardTitle').innerText = h.title;
+            document.getElementById('cardArabic').innerText = h.arabic;
+            document.getElementById('cardEnglish').innerText = h.english;
+            document.getElementById('cardHausa').innerText = h.hausa;
+            
+            // Boye shafin farko, sannan a nuna katin hadisi
+            document.getElementById('hadithList').style.display = 'none';
+            document.getElementById('hadithCard').style.display = 'block';
+        }
+
+        // 4. Wannan zai dawo da mutum shafin farko idan ya danna "Komawa Baya"
+        function komaBaya() {
+            document.getElementById('hadithList').style.display = 'grid';
+            document.getElementById('hadithCard').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
